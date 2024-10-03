@@ -27,5 +27,5 @@ CustomAmplifyDistributionStack(
     branch_name=app.node.try_get_context("branch_name"),
 )
 
-# Aspects.of(app).add(AwsSolutionsChecks())
+Aspects.of(app).add(AwsSolutionsChecks())
 app.synth()
