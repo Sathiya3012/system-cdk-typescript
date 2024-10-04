@@ -15,6 +15,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as custom from 'aws-cdk-lib/custom-resources';
+import { NagSuppressions } from 'cdk-nag';
 
 interface CustomAmplifyDistributionStackProps extends StackProps {
   webAclArn: string;
@@ -139,5 +140,85 @@ export class CustomAmplifyDistributionStack extends Stack {
     new CfnOutput(this, `oCloudFrontDistributionDomain--${branchName}`, {
       value: amplifyAppDistribution.distributionDomainName,
     });
+
+    NagSuppressions.addResourceSuppressions(
+      amplifyAppDistribution,
+      [
+        {
+          id: 'AwsSolutions-CFR1',
+          reason: 'geo restrictions to be enabled using WAF by user',
+        },
+        {
+          id: 'AwsSolutions-CFR3',
+          reason: 'user to override the logging property as required',
+        },
+        {
+          id: 'AwsSolutions-CFR4',
+          reason: 'user to override when using a custom domain and certificate',
+        },
+      ]
+    );
+    
+    NagSuppressions.addResourceSuppressions(
+      cacheInvalidationFunctionRole,
+      [
+        {
+          id: 'AwsSolutions-IAM4',
+          reason: 'CDK generated service role and policy',
+        },
+        {
+          id: 'AwsSolutions-IAM5',
+          reason: 'CDK generated service role and policy',
+        },
+        {
+          id: 'AwsSolutions-L1',
+          reason: 'CDK generated custom resource',
+        },
+      ],true
+    );
+    
+    NagSuppressions.addResourceSuppressionsByPath(
+      this,
+      `/${this.stackName}/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource`,
+      [
+        {
+          id: 'AwsSolutions-IAM4',
+          reason: 'CDK generated service role and policy',
+        },
+      ]
+    );
+    
+    NagSuppressions.addResourceSuppressionsByPath(
+      this,
+      `/${this.stackName}/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource`,
+      [
+        {
+          id: 'AwsSolutions-IAM5',
+          reason: 'CDK generated service role and policy',
+        },
+      ]
+    );
+    
+    NagSuppressions.addResourceSuppressionsByPath(
+      this,
+      `/${this.stackName}/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource`,
+      [
+        {
+          id: 'AwsSolutions-IAM4',
+          reason: 'CDK generated service role and policy',
+        },
+      ]
+    );
+    
+    NagSuppressions.addResourceSuppressionsByPath(
+      this,
+      `/${this.stackName}/AWS679f53fac002430cb0da5b7982bd2287/Resource`,
+      [
+        {
+          id: 'AwsSolutions-L1',
+          reason: 'CDK generated custom resource',
+        },
+      ]
+    );
   }
 }
